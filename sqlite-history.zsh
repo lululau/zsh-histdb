@@ -120,7 +120,7 @@ histdb-top () {
             -header \
             "select count(*) as count, places.host, replace($field, '
 ', '
-$sep$sep') as ${1:-cmd} from history left join commands on history.command_id=commands.rowid left join places on history.place_id=places.rowid group by places.host, $field order by count(*)" | \
+$sep$sep') as ${1:-cmd} from history left join commands on history.command_id=commands.rowid left join places on history.place_id=places.rowid group by places.host, $field order by count(*) desc" | \
         "${HISTDB_TABULATE_CMD[@]}"
 }
 
