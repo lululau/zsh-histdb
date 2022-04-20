@@ -184,8 +184,8 @@ histdb () {
     --until x only show commands before date x (sqlite date parser)
     --limit n only show n rows. defaults to $LINES or 25"
 
-    local selcols="session as ses, dir"
-    local cols="session, replace(places.dir, '$HOME', '~') as dir"
+    local selcols="host, session as ses, dir"
+    local cols="places.host as host, session, replace(places.dir, '$HOME', '~') as dir"
     local where="not (commands.argv like 'histdb%')"
     if [[ -p /dev/stdout ]]; then
         local limit=""
@@ -204,10 +204,6 @@ histdb () {
             hostwhere="${hostwhere}${host:+${hostwhere:+ or }places.host='$(sql_escape ${host})'}"
         done
         where="${where}${hostwhere:+ and (${hostwhere})}"
-        cols="${cols}, places.host as host"
-        selcols="${selcols}, host"
-    else
-        where="${where} and places.host=${HISTDB_HOST}"
     fi
 
     if (( ${#indirs} + ${#atdirs} )); then
