@@ -12,15 +12,10 @@ sql_escape () {
 }
 
 _histdb_query () {
-    local out=$(sqlite3 -cmd ".timeout 1000" "${HISTDB_FILE}" "$@" 2>&1)
-    # if [[ "$out" =~ "database is locked" ]] {
-    if echo "$out" | grep -q "database is locked"; then
-      :
+    if { echo "BEGIN TRANSACTION;" | sqlite3 "${HISTDB_FILE}" 2>&1; echo } | grep -q -v "database is locked"; then
+      sqlite3 -cmd ".timeout 1000" "${HISTDB_FILE}" "$@"
     else
-      echo -nE "$out"
-      if [[ "$?" -ne 0 ]] {
-        echo "error in $@"
-      }
+      echo "Database is locked. Please try again later."
     fi
 }
 
