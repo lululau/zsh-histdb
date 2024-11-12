@@ -13,14 +13,15 @@ sql_escape () {
 
 _histdb_query () {
     local out=$(sqlite3 -cmd ".timeout 1000" "${HISTDB_FILE}" "$@" 2>&1)
-    if [[ "$out" =~ "database is locked" ]] {
+    # if [[ "$out" =~ "database is locked" ]] {
+    if echo "$out" | grep -q "database is locked"; then
       :
-    } else {
+    else
       echo -nE "$out"
       if [[ "$?" -ne 0 ]] {
         echo "error in $@"
       }
-    }
+    fi
 }
 
 _histdb_init () {
@@ -343,7 +344,7 @@ order by max_start desc) order by max_start asc"
                 temp=$(mktemp)
                 cat >! "$temp"
                 cat -- "$temp"
-                rm -f -- "$temp"
+                command rm -f -- "$temp"
             }
         else
             buffer() {
